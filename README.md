@@ -39,3 +39,16 @@ python real_polygon_cyclic_robot.py
 ```
 
 ⚠️ Скрипт отправляет реальные транзакции. Сначала запускайте на минимальных объёмах.
+
+
+## Exact simulation of current bot logic (150 cycles)
+
+Для симуляции **именно текущей логики** `sinergia_bot.py` (правила `strategy_step`) без RPC:
+
+```bash
+python simulate_our_robot_150.py
+```
+
+Скрипт сохраняет:
+- `our_robot_exact_150_report.md`
+- `our_robot_exact_150_report.json`
