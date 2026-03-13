@@ -1,0 +1,13 @@
+{
+  "network": "polygon-mainnet",
+  "deployer": "0x980Ddb04c54979b3Ed23df4a7DBc7049b7d0D686",
+  "v1": {
+    "casrs": "0xec4FEc29a1278cE103cEa537f61B54d8d7d5d955",
+    "casrg": "0x71f07804Ffe953B76Bb8259763Da8B9C30DA6D8e"
+  },
+  "v2": {
+    "casrs": "0x4344E1192a4A225506EaB026697260E4B781CB83",
+    "casrg": "0xb2e64fE480d6E236C0cab3c4a4651198FCEC0188"
+  },
+  "updated_at_utc": "2026-03-12T00:00:00Z"
+}
