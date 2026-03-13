@@ -1,0 +1,55 @@
+{
+  "cycles": 150,
+  "config": {
+    "trade_cap_pol": 5.0,
+    "buyback_pol": 1.0,
+    "rebalance_pol": 1.0,
+    "repay_fraction": 0.5,
+    "rebalance_thresh": 0.02,
+    "k_buyback": 1.3,
+    "sts_buyback": 1.1,
+    "k_repay": 1.15,
+    "arb_slippage": 0.01,
+    "arb_probe_pol": 0.5,
+    "bot_sell_amount": 100.0,
+    "bot_sell_threshold": 200.0,
+    "lp_reinvest_owner_matic": 0.0
+  },
+  "initial_nav_matic": 145.0,
+  "final_nav_matic": 144.77545057896126,
+  "pnl_matic": -0.22454942103874487,
+  "roi_pct": -0.15486166968189302,
+  "max_drawdown_pct": 0.15512084666495646,
+  "lp_growth": {
+    "rs_matic_start": 90000.0,
+    "rs_matic_end": 90008.97764940398,
+    "rs_matic_growth_pct": 0.009975166004427827,
+    "rg_matic_start": 50000.0,
+    "rg_matic_end": 49980.51524807742,
+    "rg_matic_growth_pct": -0.0389695038451654
+  },
+  "final_metrics": {
+    "P_spot": 0.10001995132704822,
+    "P_twap": 0.10001995121217273,
+    "P_safe": 0.08470491776324525,
+    "K": 8.48363607796423,
+    "STS": 8.052389207359179
+  },
+  "wallets": {
+    "owner": {
+      "matic": 1.0,
+      "casrs": 289.16079849773087,
+      "casrg": 0.0
+    },
+    "bot1": {
+      "matic": 29.937128901627148,
+      "casrs": 160.0,
+      "casrg": 140.0
+    },
+    "bot2": {
+      "matic": 29.93094699463836,
+      "casrs": 130.0,
+      "casrg": 120.0
+    }
+  }
+}

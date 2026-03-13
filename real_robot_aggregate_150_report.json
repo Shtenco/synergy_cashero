@@ -1,0 +1,48 @@
+{
+  "cycles": 150,
+  "config": {
+    "buy_matic": 0.03,
+    "take_profit": 0.2,
+    "lp_invest_matic": 0.05
+  },
+  "start": {
+    "aggregate_matic": 280050.0,
+    "wallets_matic": 50.0,
+    "pools_matic": 280000.0,
+    "rs_pool_matic": 180000.0,
+    "rg_pool_matic": 100000.0
+  },
+  "end": {
+    "aggregate_matic": 280058.1941122801,
+    "wallets_matic": 42.42022901402319,
+    "pools_matic": 280015.7738832661,
+    "rs_pool_matic": 180015.77388326608,
+    "rg_pool_matic": 100000.0
+  },
+  "delta": {
+    "aggregate_matic": 8.194112280092668,
+    "wallets_matic": -7.579770985976808,
+    "pools_matic": 15.77388326608343
+  },
+  "wallets_final": {
+    "owner": {
+      "matic": 22.353775189855043,
+      "casrs": 1.196292828540629,
+      "casrg": 0.0
+    },
+    "bot1": {
+      "matic": 9.853769455352545,
+      "casrs": 1.1962920333823763,
+      "casrg": 0.0
+    },
+    "bot2": {
+      "matic": 9.853763720515513,
+      "casrs": 1.1962912384871853,
+      "casrg": 0.0
+    }
+  },
+  "prices_final": {
+    "casrs_matic": 0.10000920573966561,
+    "casrg_matic": 0.1
+  }
+}
