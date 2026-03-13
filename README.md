@@ -86,3 +86,15 @@ python simulate_real_robot_aggregate.py
 Отчёты:
 - `real_robot_aggregate_150_report.md`
 - `real_robot_aggregate_150_report.json`
+
+
+## V3 отдельная папка (контракты + deploy + liquidity + bot)
+
+Все файлы для v3 собраны в `v3/`:
+- контракты,
+- install script для Hardhat,
+- deploy script,
+- скрипт добавления ликвидности по **10 POL в каждый пул**,
+- бот v3.
+
+См. инструкции: `v3/README.md`.
