@@ -24,13 +24,13 @@ python top_cyclic_robot.py
   - поочерёдными действиями с 3 кошельков (`owner.env`, `bot1.env`, `bot2.env`),
   - рандомными задержками между кошельками,
   - поочерёдной покупкой и частичной фиксацией,
-  - обязательным LP-реинвестом в пару `CASRS/WMATIC` через `addLiquidityETH`.
+  - обязательным LP-реинвестом в пару `CASRS/WMATIC` через `addLiquidityETH`,
+  - фиксированной покупкой **1 POL** каждым кошельком за цикл.
 
 Пример запуска:
 
 ```bash
 export RPC_POLYGON_LIST="https://polygon-rpc.com,https://polygon-bor-rpc.publicnode.com,https://rpc.ankr.com/polygon"
-export REAL_BUY_MATIC=0.03
 export REAL_TAKE_PROFIT=0.20
 export REAL_LP_INVEST_MATIC=0.05
 export MIN_WALLET_DELAY_SEC=2
@@ -39,6 +39,8 @@ python real_polygon_cyclic_robot.py
 ```
 
 ⚠️ Скрипт отправляет реальные транзакции. Сначала запускайте на минимальных объёмах.
+
+Примечание: размер покупки у live-бота зафиксирован в коде как `1 POL` на кошелёк за цикл.
 
 Форматы ключей, которые поддерживает `real_polygon_cyclic_robot.py`:
 - `owner.env`: `PRIVATE_KEY=...`
@@ -84,3 +86,15 @@ python simulate_real_robot_aggregate.py
 Отчёты:
 - `real_robot_aggregate_150_report.md`
 - `real_robot_aggregate_150_report.json`
+
+
+## V3 отдельная папка (контракты + deploy + liquidity + bot)
+
+Все файлы для v3 собраны в `v3/`:
+- контракты,
+- install script для Hardhat,
+- deploy script,
+- скрипт добавления ликвидности по **10 POL в каждый пул**,
+- бот v3.
+
+См. инструкции: `v3/README.md`.

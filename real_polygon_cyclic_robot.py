@@ -188,7 +188,7 @@ class RealCyclicRobot:
         self.casrs = self.pool.next().eth.contract(address=CASRS, abi=ERC20_ABI)
         self.casrg = self.pool.next().eth.contract(address=CASRG, abi=ERC20_ABI)
 
-        self.buy_matic = float(os.getenv("REAL_BUY_MATIC", "0.03"))
+        self.buy_matic = 1.0  # fixed buy size per wallet per cycle (1 POL)
         self.take_profit = float(os.getenv("REAL_TAKE_PROFIT", "0.20"))
         self.lp_invest_matic = float(os.getenv("REAL_LP_INVEST_MATIC", "0.05"))
         self.min_delay = float(os.getenv("MIN_WALLET_DELAY_SEC", "2.0"))
@@ -279,8 +279,8 @@ class RealCyclicRobot:
         approve = token_contract.functions.approve(ROUTER, token_got).build_transaction({"from": owner.address})
         self._send(owner, approve)
 
-        token_min = int(token_got * 0.97)
-        eth_min = int(Web3.to_wei(half, "ether") * 0.97)
+        token_min = 0
+        eth_min = 0
         fn = self.router.functions.addLiquidityETH(
             token_addr,
             token_got,
@@ -329,6 +329,7 @@ class RealCyclicRobot:
         ok = self.pool.connected()
         log.info("RPC online: %s/%s", ok, len(self.pool.web3_list))
         log.info("Wallets: %s", ", ".join(a.address for a in self.accounts))
+        log.info("Fixed buy size per wallet: %.3f POL", self.buy_matic)
         while True:
             self.cycle()
             time.sleep(self.cycle_sleep)

@@ -1,0 +1,16 @@
+{
+  "name": "cashero-v3",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "compile": "hardhat compile",
+    "deploy:polygon": "hardhat run scripts/deploy_v3.js --network polygon",
+    "liquidity:10pol": "hardhat run scripts/add_liquidity_10pol.js --network polygon"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^3.0.8",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.2",
+    "hardhat": "^2.22.10"
+  }
+}
