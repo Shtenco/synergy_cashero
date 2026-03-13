@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""Deterministic 150-cycle simulation of *existing* robot logic from `sinergia_bot.py`.
+"""Deterministic simulation of existing robot logic from `sinergia_bot.py`.
 
-Goal: emulate current bot rules and contract-style metrics offline (no RPC),
-so we can measure concrete profit/loss over 150 cycles.
+Supports parameter tuning to find stable profitable regimes with LP reserve growth.
 """
 
 from __future__ import annotations
@@ -11,7 +10,7 @@ import json
 import random
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 
 @dataclass
@@ -44,18 +43,15 @@ class Pair:
         self.matic_reserve = new_m
         return out
 
-    def quote_out(self, amount_in: float, path_len: int = 2) -> float:
-        if path_len != 2:
-            raise ValueError("pair quote supports 2-step only")
-        eff = amount_in * (1.0 - self.fee)
-        k = self.token_reserve * self.matic_reserve
-        new_m = self.matic_reserve + eff
-        new_t = k / new_m
-        return self.token_reserve - new_t
-
 
 class ExistingRobot150Sim:
-    def __init__(self):
+    def __init__(
+        self,
+        cfg_override: Optional[Dict[str, float]] = None,
+        wallets_override: Optional[Dict[str, Dict[str, float]]] = None,
+        rs_pair_override: Optional[Dict[str, float]] = None,
+        rg_pair_override: Optional[Dict[str, float]] = None,
+    ):
         self.cfg = {
             "trade_cap_pol": 5.0,
             "buyback_pol": 1.0,
@@ -67,7 +63,13 @@ class ExistingRobot150Sim:
             "k_repay": 1.15,
             "arb_slippage": 0.01,
             "arb_probe_pol": 0.5,
+            "bot_sell_amount": 100.0,
+            "bot_sell_threshold": 200.0,
+            "lp_reinvest_owner_matic": 0.0,
         }
+        if cfg_override:
+            self.cfg.update(cfg_override)
+
         self.model = {
             "h_RS": 0.50,
             "h_RG": 0.90,
@@ -75,21 +77,27 @@ class ExistingRobot150Sim:
             "omega": 0.05,
         }
 
-        self.wallets: Dict[str, Dict[str, float]] = {
+        self.wallets: Dict[str, Dict[str, float]] = wallets_override or {
             "owner": {"matic": 30.0, "casrs": 0.0, "casrg": 0.0},
             "bot1": {"matic": 10.0, "casrs": 260.0, "casrg": 240.0},
             "bot2": {"matic": 10.0, "casrs": 230.0, "casrg": 220.0},
         }
 
-        # Approximate current market depths (to represent deployed pools)
-        self.rs_pair = Pair(token_reserve=900_000.0, matic_reserve=90_000.0)
-        self.rg_pair = Pair(token_reserve=500_000.0, matic_reserve=50_000.0)
+        rs = rs_pair_override or {"token_reserve": 900_000.0, "matic_reserve": 90_000.0}
+        rg = rg_pair_override or {"token_reserve": 500_000.0, "matic_reserve": 50_000.0}
+
+        self.rs_pair = Pair(token_reserve=rs["token_reserve"], matic_reserve=rs["matic_reserve"])
+        self.rg_pair = Pair(token_reserve=rg["token_reserve"], matic_reserve=rg["matic_reserve"])
+
+        self.start_rs_matic = self.rs_pair.matic_reserve
+        self.start_rg_matic = self.rg_pair.matic_reserve
 
         self.rs_supply = 1_600_000.0
         self.rg_supply = 70_000.0
         self.price_hist: List[float] = [self.rs_pair.matic_reserve / self.rs_pair.token_reserve] * 24
 
         self.initial_nav = self.total_nav()
+        self.nav_path: List[float] = [self.initial_nav]
 
     def total_nav(self) -> float:
         p_rs = self.rs_pair.matic_reserve / self.rs_pair.token_reserve
@@ -126,13 +134,7 @@ class ExistingRobot150Sim:
         denominator = D + unwind
         STS = numerator / denominator if denominator > 0 else 99.0
 
-        return {
-            "P_spot": P_spot,
-            "P_twap": P_twap,
-            "P_safe": P_safe,
-            "K": K,
-            "STS": STS,
-        }
+        return {"P_spot": P_spot, "P_twap": P_twap, "P_safe": P_safe, "K": K, "STS": STS}
 
     def buy(self, wallet: str, token: str, matic: float):
         w = self.wallets[wallet]
@@ -142,7 +144,6 @@ class ExistingRobot150Sim:
         if token == "casrs":
             out = self.rs_pair.buy_token(amt)
             w["casrs"] += out
-            self.rs_supply += 0.0
         else:
             out = self.rg_pair.buy_token(amt)
             w["casrg"] += out
@@ -173,11 +174,25 @@ class ExistingRobot150Sim:
         w["casrg"] -= amt
         self.rg_supply = max(0.0, self.rg_supply - amt)
 
+    def _owner_lp_reinvest(self):
+        reinvest = self.cfg["lp_reinvest_owner_matic"]
+        if reinvest <= 0:
+            return
+        owner = self.wallets["owner"]
+        amt = min(reinvest, owner["matic"])
+        if amt <= 0:
+            return
+        half = amt * 0.5
+        token_out = self.rs_pair.buy_token(half)
+        owner["matic"] -= half
+        # add liquidity proportionally to current price (simplified LP add)
+        self.rs_pair.matic_reserve += half
+        self.rs_pair.token_reserve += token_out
+
     def cycle(self):
         m = self.system_metrics()
         owner = self.wallets["owner"]
 
-        # copied logic from sinergia_bot.strategy_step
         if m["K"] > self.cfg["k_buyback"] and m["STS"] > self.cfg["sts_buyback"] and owner["matic"] > self.cfg["buyback_pol"]:
             self.buy("owner", "casrs", self.cfg["buyback_pol"])
 
@@ -192,27 +207,21 @@ class ExistingRobot150Sim:
                 self.buy("owner", "casrs", self.cfg["rebalance_pol"])
 
         for b in ("bot1", "bot2"):
-            if self.wallets[b]["casrs"] > 200:
-                self.sell(b, "casrs", 100)
-            if self.wallets[b]["casrg"] > 200:
-                self.sell(b, "casrg", 100)
+            if self.wallets[b]["casrs"] > self.cfg["bot_sell_threshold"]:
+                self.sell(b, "casrs", self.cfg["bot_sell_amount"])
+            if self.wallets[b]["casrg"] > self.cfg["bot_sell_threshold"]:
+                self.sell(b, "casrg", self.cfg["bot_sell_amount"])
 
-        # emulate arb probe from sinergia_bot (same intent, simplified quote check)
         arb_probe = min(self.cfg["arb_probe_pol"], self.cfg["trade_cap_pol"], owner["matic"])
         if arb_probe > 0.1:
-            # WMATIC->RS output
             out_rs = self.rs_pair.buy_token(arb_probe)
-            # undo virtual trade effect by reversing approximately to keep probe as quote-only
             _ = self.rs_pair.sell_token(out_rs)
 
-            # WMATIC->RG output
             out_rg = self.rg_pair.buy_token(arb_probe)
             _ = self.rg_pair.sell_token(out_rg)
 
-            # RS->WMATIC->RG cross approximate
             matic_from_rs = self.rs_pair.sell_token(out_rs)
             cross_rg = self.rg_pair.buy_token(matic_from_rs)
-            # revert
             _ = self.rg_pair.sell_token(cross_rg)
             _ = self.rs_pair.buy_token(matic_from_rs)
 
@@ -220,6 +229,9 @@ class ExistingRobot150Sim:
                 self.buy("owner", "casrs", arb_probe)
                 rs_bal = self.wallets["owner"]["casrs"]
                 self.sell("owner", "casrs", min(rs_bal, 100))
+
+        self._owner_lp_reinvest()
+        self.nav_path.append(self.total_nav())
 
     def run(self, cycles: int = 150):
         for _ in range(cycles):
@@ -229,46 +241,67 @@ class ExistingRobot150Sim:
         pnl = final_nav - self.initial_nav
         roi = (pnl / self.initial_nav * 100) if self.initial_nav else 0.0
 
+        peak = self.nav_path[0]
+        max_dd = 0.0
+        for n in self.nav_path:
+            if n > peak:
+                peak = n
+            dd = (peak - n) / peak if peak > 0 else 0.0
+            if dd > max_dd:
+                max_dd = dd
+
         m = self.system_metrics()
         report = {
             "cycles": cycles,
+            "config": self.cfg,
             "initial_nav_matic": self.initial_nav,
             "final_nav_matic": final_nav,
             "pnl_matic": pnl,
             "roi_pct": roi,
+            "max_drawdown_pct": max_dd * 100,
+            "lp_growth": {
+                "rs_matic_start": self.start_rs_matic,
+                "rs_matic_end": self.rs_pair.matic_reserve,
+                "rs_matic_growth_pct": (self.rs_pair.matic_reserve / self.start_rs_matic - 1) * 100,
+                "rg_matic_start": self.start_rg_matic,
+                "rg_matic_end": self.rg_pair.matic_reserve,
+                "rg_matic_growth_pct": (self.rg_pair.matic_reserve / self.start_rg_matic - 1) * 100,
+            },
             "final_metrics": m,
             "wallets": self.wallets,
-            "pool_rs": {
-                "token_reserve": self.rs_pair.token_reserve,
-                "matic_reserve": self.rs_pair.matic_reserve,
-            },
-            "pool_rg": {
-                "token_reserve": self.rg_pair.token_reserve,
-                "matic_reserve": self.rg_pair.matic_reserve,
-            },
         }
-        Path("our_robot_exact_150_report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-        md = [
-            "# Simulation of existing robot + existing contract mechanics (150 cycles)",
-            "",
-            f"- Cycles: {cycles}",
-            f"- Initial NAV: {self.initial_nav:.6f} MATIC",
-            f"- Final NAV: {final_nav:.6f} MATIC",
-            f"- PnL: {pnl:.6f} MATIC",
-            f"- ROI: {roi:.4f}%",
-            "",
-            "## Final system metrics",
-            f"- P_spot: {m['P_spot']:.8f}",
-            f"- P_twap: {m['P_twap']:.8f}",
-            f"- P_safe: {m['P_safe']:.8f}",
-            f"- K: {m['K']:.6f}",
-            f"- STS: {m['STS']:.6f}",
-        ]
-        Path("our_robot_exact_150_report.md").write_text("\n".join(md) + "\n", encoding="utf-8")
-        print(f"PnL after {cycles} cycles: {pnl:.6f} MATIC ({roi:.4f}%)")
+        return report
+
+
+def save_report(report: Dict, json_path: str, md_path: str):
+    Path(json_path).write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    md = [
+        "# Simulation of existing robot + existing contract mechanics",
+        "",
+        f"- Cycles: {report['cycles']}",
+        f"- Initial NAV: {report['initial_nav_matic']:.6f} MATIC",
+        f"- Final NAV: {report['final_nav_matic']:.6f} MATIC",
+        f"- PnL: {report['pnl_matic']:.6f} MATIC",
+        f"- ROI: {report['roi_pct']:.4f}%",
+        f"- Max drawdown: {report['max_drawdown_pct']:.4f}%",
+        "",
+        "## LP reserve growth",
+        f"- RS pool MATIC: {report['lp_growth']['rs_matic_start']:.6f} -> {report['lp_growth']['rs_matic_end']:.6f} ({report['lp_growth']['rs_matic_growth_pct']:.4f}%)",
+        f"- RG pool MATIC: {report['lp_growth']['rg_matic_start']:.6f} -> {report['lp_growth']['rg_matic_end']:.6f} ({report['lp_growth']['rg_matic_growth_pct']:.4f}%)",
+        "",
+        "## Final metrics",
+        f"- P_spot: {report['final_metrics']['P_spot']:.8f}",
+        f"- P_twap: {report['final_metrics']['P_twap']:.8f}",
+        f"- P_safe: {report['final_metrics']['P_safe']:.8f}",
+        f"- K: {report['final_metrics']['K']:.6f}",
+        f"- STS: {report['final_metrics']['STS']:.6f}",
+    ]
+    Path(md_path).write_text("\n".join(md) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":
     random.seed(42)
     sim = ExistingRobot150Sim()
-    sim.run(150)
+    report = sim.run(150)
+    save_report(report, "our_robot_exact_150_report.json", "our_robot_exact_150_report.md")
+    print(f"PnL after 150 cycles: {report['pnl_matic']:.6f} MATIC ({report['roi_pct']:.4f}%)")

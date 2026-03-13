@@ -52,3 +52,30 @@ python simulate_our_robot_150.py
 Скрипт сохраняет:
 - `our_robot_exact_150_report.md`
 - `our_robot_exact_150_report.json`
+
+
+Параметрический подбор под стабильность/прибыль:
+
+```bash
+python optimize_robot_profitability.py
+```
+
+Рекомендации: `HOW_TO_MAKE_ROBOT_STABLE_PROFITABLE.md`.
+
+
+## Simulation of REAL robot aggregate assets (wallets + both pools)
+
+Чтобы проверить, растёт ли сумма активов в POLYGON для:
+- всех кошельков,
+- пула `CASRS/WMATIC`,
+- пула `CASRG/WMATIC`,
+
+запустите:
+
+```bash
+python simulate_real_robot_aggregate.py
+```
+
+Отчёты:
+- `real_robot_aggregate_150_report.md`
+- `real_robot_aggregate_150_report.json`
