@@ -61,6 +61,32 @@ def read_env_file(path: str) -> Dict[str, str]:
     return values
 
 
+def load_private_key(path: str) -> str:
+    """Support both formats used in repo:
+    1) KEY=... (e.g. owner.env)
+    2) raw private key in a single line (e.g. bot1.env/bot2.env)
+    """
+    env = read_env_file(path)
+    for k in ("PRIVATE_KEY", "OWNER_PRIVATE_KEY", "BOT_PRIVATE_KEY"):
+        if env.get(k):
+            return env[k]
+
+    if not os.path.exists(path):
+        raise RuntimeError(f"Missing key file: {path}")
+
+    with open(path, "r", encoding="utf-8") as f:
+        for line in f:
+            raw = line.strip().strip('"').strip("'")
+            if not raw or raw.startswith("#"):
+                continue
+            if "=" in raw:
+                # unknown key name line, skip; known names handled via read_env_file
+                continue
+            return raw
+
+    raise RuntimeError(f"No private key found in {path}")
+
+
 ERC20_ABI = [
     {"name": "balanceOf", "inputs": [{"name": "account", "type": "address"}], "outputs": [{"type": "uint256"}], "stateMutability": "view", "type": "function"},
     {"name": "approve", "inputs": [{"name": "spender", "type": "address"}, {"name": "amount", "type": "uint256"}], "outputs": [{"type": "bool"}], "stateMutability": "nonpayable", "type": "function"},
@@ -176,10 +202,7 @@ class RealCyclicRobot:
     def _load_accounts(self) -> List[Account]:
         out = []
         for name, path in [("owner", "owner.env"), ("bot1", "bot1.env"), ("bot2", "bot2.env")]:
-            env = read_env_file(path)
-            key = env.get("PRIVATE_KEY")
-            if not key:
-                raise RuntimeError(f"No PRIVATE_KEY in {path}")
+            key = load_private_key(path)
             w3 = self.pool.next()
             acc = w3.eth.account.from_key(key)
             out.append(Account(name=name, private_key=key, address=acc.address))

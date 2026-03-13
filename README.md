@@ -40,6 +40,11 @@ python real_polygon_cyclic_robot.py
 
 ⚠️ Скрипт отправляет реальные транзакции. Сначала запускайте на минимальных объёмах.
 
+Форматы ключей, которые поддерживает `real_polygon_cyclic_robot.py`:
+- `owner.env`: `PRIVATE_KEY=...`
+- `bot1.env`, `bot2.env`: можно как `PRIVATE_KEY=...`, так и просто одной строкой с приватным ключом.
+
+
 
 ## Exact simulation of current bot logic (150 cycles)
 
