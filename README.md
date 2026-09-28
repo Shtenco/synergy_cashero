@@ -129,3 +129,36 @@ flowchart LR
 `GREEN` присваивается только воспроизводимым утверждениям. Исследовательский код, диаграмма или заявленная метрика без проверяемого artifact trail остаются `R&D/CANDIDATE`.
 
 <!-- SYNERGY-FEDERATION-PASSPORT:END -->
+
+---
+
+# 💰 Глубокий доказательный паспорт Cashero
+
+## Фактический профиль
+
+Cashero сочетает симуляторы циклической ликвидности, parameter search, live Polygon robot и V3 contracts/deploy scripts.
+
+```mermaid
+flowchart LR
+    SIM[Simulation] --> PARAM[Parameter search]
+    PARAM --> BOT[Polygon robot]
+    BOT --> LP[CASRS/CASRG liquidity]
+    LP --> REPORT[Aggregate asset reports]
+```
+
+## Критический security boundary
+
+В `main` присутствуют `.env`, `owner.env`, `bot1.env`, `bot2.env`. Даже если текущие значения тестовые, **секретные ключи не должны храниться в Git**. Любой когда-либо committed private key следует считать потенциально скомпрометированным.
+
+## Economic boundary
+
+Обязательное добавление собственной ликвидности, покупки между собственными кошельками и token appreciation не должны считаться external profit. Правильная метрика — consolidated external assets minus external liabilities/costs.
+
+## Следующий рубеж
+
+- удалить/rotate secrets;
+- deterministic simulation vs live parity;
+- gas + slippage + tax accounting;
+- consolidated wallet+LP ledger;
+- external-counterparty-only PnL decomposition;
+- live execution disabled by default.
