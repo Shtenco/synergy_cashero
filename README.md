@@ -461,6 +461,14 @@ It must **not** define consolidated HardNAV by itself.
 - что production deployment разрешён;
 - что mint/LP mechanics создают бесплатное wealth.
 
+## 22. 🎯 Формальная проблема, которую должен решать CASHERO
+
+Главный научный вопрос repository не «как заставить внутренние числа расти», а:
+
+> может ли система после учёта ownership, liabilities, external executable prices, fees/gas and settlement показать положительный **consolidated external owner/protocol result**, который воспроизводится вне замкнутой внутренней переоценки?
+
+Именно поэтому отрицательные simulation reports и отсутствие fully-feasible parameter runs считаются полезным evidence, а не неудачей, которую надо скрыть.
+
 ---
 
 [🧭 SYNERGY SYSTEM](https://github.com/Shtenco/synergy_system) · [🔐 Security blockers](https://github.com/Shtenco/synergy_system/blob/main/registry/SECURITY_BLOCKERS.json) · [📚 Atlas](https://github.com/Shtenco/synergy_system/blob/main/docs/SYNERGY_REPOSITORY_ATLAS.md)
