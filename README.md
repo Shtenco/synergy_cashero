@@ -38,13 +38,13 @@ The diagram represents conceptual responsibilities, not a confirmed production i
 
 ---
 
-# 💸 SYNERGY CASHERO — verified technical & evidence dossier
+#  SYNERGY CASHERO — verified technical & evidence dossier
 
-> **Статус:** 🔴 **SECURITY_BLOCKED** для deployment/federation promotion до ротации и очистки committed credentials.
+> **Статус:**  **SECURITY_BLOCKED** для deployment/federation promotion до ротации и очистки committed credentials.
 > **Технический профиль:** Solidity + Python/Web3 bots + deterministic AMM/system simulations + research reports.
 > **Проверено по фактическому `main`, ключевым исходникам и сохранённым reports:** 29.09.2026.
 
-## 1. 🎯 Что это за repository
+## 1.  Что это за repository
 
 `synergy_cashero` — mixed financial/monetary R&D repository вокруг двухконтурной токенной модели, AMM/LP, CASRS/CASRG contracts, циклических роботов и проверки того, может ли механика давать устойчивый результат без подмены внутренней переоценки реальной прибылью.
 
@@ -58,7 +58,7 @@ The diagram represents conceptual responsibilities, not a confirmed production i
 - legacy economic-system scripts;
 - deployment/config material.
 
-## 2. 📦 Фактический состав `main`
+## 2.  Фактический состав `main`
 
 Ключевые элементы:
 
@@ -93,7 +93,7 @@ mainnet-addresses.json
 
 Есть также исторические DOCX-материалы по двухконтурной платёжной системе.
 
-## 3. 🚨 Критический security finding
+## 3.  Критический security finding
 
 На `main` committed credential-like files:
 
@@ -128,7 +128,7 @@ credential committed to Git
 
 Канонический blocker записан в `Shtenco/synergy_system/registry/SECURITY_BLOCKERS.json`.
 
-## 4. 🏗️ Архитектурная идея
+## 4.  Архитектурная идея
 
 Репозиторий исследует два связанных token/financial contours.
 
@@ -157,7 +157,7 @@ mint != profit
 internal NAV model != consolidated HardNAV unless claims are economically valid
 ```
 
-## 5. 🤖 Реальный Web3 bot path
+## 5.  Реальный Web3 bot path
 
 `cashero_v3_bot.py`:
 
@@ -191,7 +191,7 @@ NOTE: set real X/Y/F/B/C/R values from oracle/indexer in production
 
 Следовательно этот path **не должен считаться production economic oracle integration**.
 
-## 6. 🔐 Execution risks текущего bot
+## 6.  Execution risks текущего bot
 
 В inspected code есть несколько production blockers:
 
@@ -208,7 +208,7 @@ NOTE: set real X/Y/F/B/C/R values from oracle/indexer in production
 
 Поэтому наличие real Web3 calls ≠ безопасная production готовность.
 
-## 7. 🧮 Deterministic AMM simulator
+## 7.  Deterministic AMM simulator
 
 `simulate_our_robot_150.py` содержит x·y=k-style Pair:
 
@@ -237,7 +237,7 @@ Simulation хранит wallets, RS/RG pools, supply, TWAP-like history и ра�
 - max drawdown;
 - LP reserve growth.
 
-## 8. 📐 Модельные метрики
+## 8.  Модельные метрики
 
 В inspected simulator:
 
@@ -257,7 +257,7 @@ P_{safe}=min(P_{twap},P_{exit})
 
 Эти метрики являются **внутренними model variables**, не audited external solvency measures.
 
-## 9. 📊 Сохранённые evidence reports: противоречивые результаты
+## 9.  Сохранённые evidence reports: противоречивые результаты
 
 Это важнейшая часть repository, которую README обязан показывать полностью.
 
@@ -309,7 +309,7 @@ Top candidates всё ещё имели небольшой отрицатель�
 
 Это сильный отрицательный evidence и он важнее выборочной демонстрации удачного model report.
 
-## 10. 🛡️ Экономические инварианты
+## 10.  Экономические инварианты
 
 ```text
 mint != profit
@@ -325,7 +325,7 @@ aggregate pool delta != wallet profit
 
 Для честной оценки нужен owner/consolidated balance sheet.
 
-## 11. 📥 Inputs
+## 11.  Inputs
 
 В зависимости от path:
 
@@ -347,7 +347,7 @@ aggregate pool delta != wallet profit
 - cycle count;
 - random seed/model rules.
 
-## 12. 📤 Outputs
+## 12.  Outputs
 
 - on-chain tx hashes (real bot path);
 - balances/state changes;
@@ -357,7 +357,7 @@ aggregate pool delta != wallet profit
 - K/STS/Psafe;
 - parameter search ranking.
 
-## 13. 🧪 Evidence hierarchy
+## 13.  Evidence hierarchy
 
 ```text
 source code
@@ -371,7 +371,7 @@ source code
 
 Текущий repository содержит первые уровни и потенциально mainnet-oriented bot code, но README не объявляет audited external P&L.
 
-## 14. ⚠️ Главные modeling risks
+## 14.  Главные modeling risks
 
 1. internal token marks inflate NAV;
 2. LP ownership may be ambiguously attributed;
@@ -383,7 +383,7 @@ source code
 8. historical/external market path is not necessarily used;
 9. smart-contract security not established merely by source presence.
 
-## 15. 🧪 Required next tests
+## 15.  Required next tests
 
 ### Accounting
 - consolidated double-entry ledger;
@@ -420,7 +420,7 @@ source code
 - OOS parameter selection;
 - external-value reconciliation.
 
-## 16. 🛠️ Reproducibility
+## 16.  Reproducibility
 
 Simulation path can be reproduced from source, for example:
 
@@ -434,7 +434,7 @@ python simulate_our_robot_150.py
 
 **Do not run the live Web3 bot with committed credentials.** Credentials must be rotated first.
 
-## 17. 🗺️ Repository map
+## 17.  Repository map
 
 | Area | Purpose |
 |---|---|
@@ -446,11 +446,11 @@ python simulate_our_robot_150.py
 | `simulate_real_robot_aggregate.py` | aggregate model |
 | `optimize_robot_profitability.py` | parameter search |
 | `*_report.json/md` | saved evidence |
-| `*.env` | 🔴 committed credential risk |
+| `*.env` |  committed credential risk |
 | legacy finance scripts | historical prototypes |
 | DOCX | historical design documentation |
 
-## 18. 🔗 Место в SYNERGY
+## 18.  Место в SYNERGY
 
 CASHERO belongs to finance/monetary R&D and should feed accounting evidence into:
 
@@ -460,23 +460,23 @@ CASHERO belongs to finance/monetary R&D and should feed accounting evidence into
 
 It must **not** define consolidated HardNAV by itself.
 
-## 19. 📊 Current evidence maturity
+## 19.  Current evidence maturity
 
 | Layer | Status |
 |---|---|
-| Solidity sources | ✅ present |
-| Python bots | ✅ present |
-| deterministic simulators | ✅ |
-| saved reports | ✅ |
-| parameter search | ✅ |
-| negative evidence preserved | ✅ |
-| secure credential handling | 🔴 FAIL |
-| production oracle/state inputs | ❌ |
-| audited contract security | ❌ |
-| consolidated external P&L | ❌ |
-| safe production deployment | 🔴 BLOCKED |
+| Solidity sources |  present |
+| Python bots |  present |
+| deterministic simulators |  |
+| saved reports |  |
+| parameter search |  |
+| negative evidence preserved |  |
+| secure credential handling |  FAIL |
+| production oracle/state inputs |  |
+| audited contract security |  |
+| consolidated external P&L |  |
+| safe production deployment |  BLOCKED |
 
-## 20. 🚀 Roadmap
+## 20.  Roadmap
 
 1. rotate every exposed credential;
 2. purge secrets/current tree/history;
@@ -490,7 +490,7 @@ It must **not** define consolidated HardNAV by itself.
 10. reconcile every positive result to external owned assets;
 11. only after security + evidence gates reconsider federation promotion.
 
-## 21. 🛑 Что проект НЕ утверждает
+## 21.  Что проект НЕ утверждает
 
 - что saved +78k% model ROI является realized external profit;
 - что 150-cycle aggregate pool growth принадлежит владельцу;
@@ -501,7 +501,7 @@ It must **not** define consolidated HardNAV by itself.
 - что production deployment разрешён;
 - что mint/LP mechanics создают бесплатное wealth.
 
-## 22. 🎯 Формальная проблема, которую должен решать CASHERO
+## 22.  Формальная проблема, которую должен решать CASHERO
 
 Главный научный вопрос repository не «как заставить внутренние числа расти», а:
 
@@ -511,4 +511,4 @@ It must **not** define consolidated HardNAV by itself.
 
 ---
 
-[🧭 SYNERGY SYSTEM](https://github.com/Shtenco/synergy_system) · [🔐 Security blockers](https://github.com/Shtenco/synergy_system/blob/main/registry/SECURITY_BLOCKERS.json) · [📚 Atlas](https://github.com/Shtenco/synergy_system/blob/main/docs/SYNERGY_REPOSITORY_ATLAS.md)
+[ SYNERGY SYSTEM](https://github.com/Shtenco/synergy_system) · [ Security blockers](https://github.com/Shtenco/synergy_system/blob/main/registry/SECURITY_BLOCKERS.json) · [ Atlas](https://github.com/Shtenco/synergy_system/blob/main/docs/SYNERGY_REPOSITORY_ATLAS.md)
