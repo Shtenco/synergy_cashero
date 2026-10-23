@@ -1,3 +1,43 @@
+<div align="center">
+
+<img src="assets/readme/hero.svg" alt="CASHERO / TOKEN RESEARCH vector hero" width="100%"/>
+
+**Solidity tokens, AMM simulators and Polygon robot experiments**
+
+[Overview](#verified-overview) · [Architecture](#architecture-map) · [Evidence](#evidence-boundary) · [Documentation](#original-technical-documentation)
+
+</div>
+
+## Verified overview
+
+Solidity tokens, AMM simulators and Polygon robot experiments. Main project components: `contracts/; cashero_v3_bot.py`. This README describes source code and research rather than independently confirmed production service.
+
+## Architecture map
+
+```mermaid
+flowchart LR
+A[Source and configuration] --> B[Implemented project modules]
+B --> C[Output or presentation]
+C --> D[Independent validation and review]
+```
+
+The diagram represents conceptual responsibilities, not a confirmed production integration.
+
+## Evidence boundary
+
+> SECURITY BLOCKER: tracked environment files may contain live credentials. Revoke and replace exposed keys before deployment.
+
+| Domain | Interpretation |
+|:--|:--|
+| Repository files | Inspectable implementation artifacts |
+| Test and CI results | Require separate current run evidence |
+| Performance metrics | Require timestamped and reproducible evaluation |
+| Production claims | Not established solely by documentation |
+
+## Original technical documentation
+
+---
+
 # 💸 SYNERGY CASHERO — verified technical & evidence dossier
 
 > **Статус:** 🔴 **SECURITY_BLOCKED** для deployment/federation promotion до ротации и очистки committed credentials.
