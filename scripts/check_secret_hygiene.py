@@ -36,6 +36,8 @@ def is_forbidden_path(path: str) -> bool:
         return True
     if name.startswith(".env.") and name != ".env.example":
         return True
+    if p.suffix.lower() == ".env":
+        return True
     if p.suffix.lower() in FORBIDDEN_SUFFIXES:
         return True
     if p.parent.name.lower() == "wallets" and p.suffix.lower() == ".env":
