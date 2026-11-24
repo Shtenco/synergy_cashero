@@ -12,6 +12,7 @@ Use with caution: this script signs and sends real transactions.
 
 import logging
 import os
+from pathlib import Path
 import random
 import time
 from dataclasses import dataclass
@@ -62,29 +63,33 @@ def read_env_file(path: str) -> Dict[str, str]:
 
 
 def load_private_key(path: str) -> str:
-    """Support both formats used in repo:
-    1) KEY=... (e.g. owner.env)
-    2) raw private key in a single line (e.g. bot1.env/bot2.env)
+    """Load a wallet key from its dedicated environment variable.
+
+    A local ignored file is retained only as a developer fallback. Never commit
+    wallet files or place private keys in tracked configuration.
     """
+    variable = f"{Path(path).stem.upper()}_PRIVATE_KEY"
+    value = os.getenv(variable)
+    if value:
+        return value.strip()
+
     env = read_env_file(path)
-    for k in ("PRIVATE_KEY", "OWNER_PRIVATE_KEY", "BOT_PRIVATE_KEY"):
-        if env.get(k):
-            return env[k]
+    for key_name in ("PRIVATE_KEY", "OWNER_PRIVATE_KEY", "BOT_PRIVATE_KEY"):
+        if env.get(key_name):
+            return env[key_name]
 
-    if not os.path.exists(path):
-        raise RuntimeError(f"Missing key file: {path}")
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            for line in f:
+                raw = line.strip().strip('"').strip("'")
+                if not raw or raw.startswith("#") or "=" in raw:
+                    continue
+                return raw
 
-    with open(path, "r", encoding="utf-8") as f:
-        for line in f:
-            raw = line.strip().strip('"').strip("'")
-            if not raw or raw.startswith("#"):
-                continue
-            if "=" in raw:
-                # unknown key name line, skip; known names handled via read_env_file
-                continue
-            return raw
-
-    raise RuntimeError(f"No private key found in {path}")
+    raise RuntimeError(
+        f"Missing wallet key: set {variable} in the process environment "
+        "or provide an ignored local wallet file"
+    )
 
 
 ERC20_ABI = [
