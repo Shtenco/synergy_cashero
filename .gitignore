@@ -6,8 +6,13 @@ owner.env
 bot1.env
 bot2.env
 wallets/*.env
+.private/
 *.key
+*.ppk
 *.pem
+*.p12
+*.pfx
+*.keystore
 *.seed
 *.mnemonic
 
