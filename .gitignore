@@ -1,0 +1,22 @@
+# Wallets and deployment secrets
+.env
+.env.*
+!.env.example
+owner.env
+bot1.env
+bot2.env
+wallets/*.env
+*.key
+*.pem
+*.seed
+*.mnemonic
+
+# Local development artifacts
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+artifacts/
+cache/
+coverage/
