@@ -12,6 +12,7 @@ Use with caution: this script signs and sends real transactions.
 
 import logging
 import os
+from pathlib import Path
 import random
 import time
 from dataclasses import dataclass
