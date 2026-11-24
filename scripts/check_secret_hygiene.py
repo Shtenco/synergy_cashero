@@ -18,7 +18,7 @@ PRIVATE_KEY_MARKERS = (
     b"-----BEGIN " + b"PRIVATE KEY-----",
     b"-----BEGIN RSA " + b"PRIVATE KEY-----",
     b"-----BEGIN OPENSSH " + b"PRIVATE KEY-----",
-    b"PuTTY-User-Key-File-",
+    b"PuTTY-User-Key-" + b"File-",
 )
 
 
