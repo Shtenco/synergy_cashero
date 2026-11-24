@@ -39,3 +39,8 @@ For a fee-adjusted CPMM with reserves x and y, input delta_y and fee f, output d
 ## Publication protocol
 
 Claims must refer to the exact current source commit or an identified experiment artifact. Source code establishes implementation; experiments require frozen inputs, complete costs, successful repeated checks and a labelled evaluation regime. Financial values are attributed to their measurement environment. This page is a scientifically grounded overview and is not an offer of investment returns.
+
+
+## Security status — wallet credentials
+
+The repository previously contained tracked wallet-key material. The security remediation branch removes those files from its current tree and uses per-wallet environment variables instead. This does not erase Git history or prove external key rotation. **Do not deploy or sign transactions with previously committed keys.** See [the incident record](docs/SECURITY_WALLET_KEY_INCIDENT_2026-11-25.md) and complete external revocation/rotation before deployment.
