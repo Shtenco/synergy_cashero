@@ -15,9 +15,9 @@ PRIVATE_KEY_ASSIGNMENT = re.compile(
     r"(?im)^\s*(?:OWNER_|BOT\d*_)?PRIVATE_KEY\s*=\s*([^\s#]+)"
 )
 PRIVATE_KEY_MARKERS = (
-    b"-----BEGIN PRIVATE KEY-----",
-    b"-----BEGIN RSA PRIVATE KEY-----",
-    b"-----BEGIN OPENSSH PRIVATE KEY-----",
+    b"-----BEGIN " + b"PRIVATE KEY-----",
+    b"-----BEGIN RSA " + b"PRIVATE KEY-----",
+    b"-----BEGIN OPENSSH " + b"PRIVATE KEY-----",
     b"PuTTY-User-Key-File-",
 )
 
