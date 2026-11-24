@@ -23,20 +23,25 @@ except ImportError:
 
 
 def load_key(path: str) -> str:
-    if not os.path.exists(path):
-        raise RuntimeError(f"missing {path}")
-    with open(path, "r", encoding="utf-8") as f:
-        for line in f:
-            s = line.strip().strip('"').strip("'")
-            if not s or s.startswith("#"):
-                continue
-            if "=" in s:
-                k, v = s.split("=", 1)
-                if k.strip().upper() in {"PRIVATE_KEY", "OWNER_PRIVATE_KEY", "BOT_PRIVATE_KEY"}:
-                    return v.strip()
-                continue
-            return s
-    raise RuntimeError(f"no key in {path}")
+    # Prefer per-wallet environment variables; local ignored files remain an
+    # optional developer-only fallback and must never be committed.
+    variable = f"{os.path.splitext(os.path.basename(path))[0].upper()}_PRIVATE_KEY"
+    value = os.getenv(variable)
+    if value:
+        return value.strip()
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            for line in f:
+                s = line.strip().strip('"').strip("'")
+                if not s or s.startswith("#"):
+                    continue
+                if "=" in s:
+                    k, v = s.split("=", 1)
+                    if k.strip().upper() in {"PRIVATE_KEY", "OWNER_PRIVATE_KEY", "BOT_PRIVATE_KEY"}:
+                        return v.strip()
+                    continue
+                return s
+    raise RuntimeError(f"missing wallet key: set {variable} in the process environment or provide an ignored local file")
 
 
 @dataclass
